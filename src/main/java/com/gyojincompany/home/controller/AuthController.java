@@ -1,8 +1,12 @@
 package com.gyojincompany.home.controller;
 
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -35,6 +39,11 @@ public class AuthController {
 		
 		return ResponseEntity.ok("회원가입 성공!"); //가입성공 -> 성공메시지
 		//return ResponseEntity.ok(req); //가입성공 후 해당 엔티티 반환
+	}
+	
+	@GetMapping("/me") //현재 로그인한 사용자 정보를 가져오는 요청(나 자신의 정보->현재 로그인한 유저의 정보)
+	public ResponseEntity<?> me(Authentication auth) {
+		return ResponseEntity.ok(Map.of("username", auth.getName()));
 	}
 	
 }

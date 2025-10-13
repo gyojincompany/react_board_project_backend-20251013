@@ -10,6 +10,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -18,7 +19,7 @@ import jakarta.servlet.http.HttpServletResponse;
 
 @Configuration
 @EnableWebSecurity //모든 요청 url이 스프링 시큐리티의 제어를 받도록 하는 annotation
-public class Securityconfig {
+public class Securityconfig {	
 	
 	@Bean
 	public SecurityFilterChain fiteChain(HttpSecurity http) throws Exception {
@@ -29,7 +30,7 @@ public class Securityconfig {
             .requestMatchers("/api/auth/signup", "/api/auth/login", "/api/board", "/api/board/**").permitAll()
             .anyRequest().authenticated()
         )
-        .formLogin(login -> login
+        .formLogin(login -> login //아이디와 비밀번호 확인은 여기서!->확인되면 세션까지 생성
             .loginPage("/api/auth/login") //로그인 요청 url
             .usernameParameter("username")
             .passwordParameter("password")
@@ -52,7 +53,7 @@ public class Securityconfig {
 	@Bean
 	public PasswordEncoder passwordEncoder() {
 		return new BCryptPasswordEncoder();
-	}
+	}	
 	
 	//프론트엔드 리액트에서 요청하는 주소 허용
 	@Bean
