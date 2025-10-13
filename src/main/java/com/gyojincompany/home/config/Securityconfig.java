@@ -7,19 +7,13 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
-import com.gyojincompany.home.entity.SiteUser;
 
 import jakarta.servlet.http.HttpServletResponse;
 
@@ -28,41 +22,36 @@ import jakarta.servlet.http.HttpServletResponse;
 public class Securityconfig {	
 	
 	@Bean
-	public SecurityFilterChain fiteChain(HttpSecurity http) throws Exception {
-		http
-		.csrf(csrf -> csrf.disable()) //csrf 인증을 비활성화->리액트, vue 같은 프론트엔+백엔드 구조->불필요
-		.cors(Customizer.withDefaults()) //cors->활성화
-        .authorizeHttpRequests(auth -> auth
-            .requestMatchers("/api/auth/signup", "/api/auth/login", "/api/board", "/api/board/**").permitAll()
-            .anyRequest().authenticated()
-        )
-        .formLogin(login -> login //아이디와 비밀번호 확인은 여기서!->확인되면 세션까지 생성
-            .loginProcessingUrl("/api/auth/login") //로그인 요청 url
-            .usernameParameter("username")
-            .passwordParameter("password")           
-            //로그인이 성공시 -> ok -> 200
-            .successHandler((req, res, auth) -> res.setStatus(HttpServletResponse.SC_OK))
-            //로그인이 실패시 -> fail -> 401
-            .failureHandler((req, res, ex) -> res.setStatus(HttpServletResponse.SC_UNAUTHORIZED))            
-            
-        )
-        .logout(logout -> logout
-        	.logoutUrl("/api/auth/logout") //로그아웃 요청이 들어오는 url
-        	.logoutSuccessHandler((req, res, auth) -> res.setStatus(HttpServletResponse.SC_OK))
-        	//로그아웃 성공시 200 응답
-            
-        );
+	public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+	    http
+	        .csrf(csrf -> csrf.disable())  // ✅ 새 방식 (람다 DSL)
+	        .cors(Customizer.withDefaults())
+	        .authorizeHttpRequests(auth -> auth
+	            .requestMatchers("/api/auth/signup", "/api/auth/login", "/api/board", "/api/board/**").permitAll()
+	            .anyRequest().authenticated()
+	        )
+	        .formLogin(login -> login
+	            .loginProcessingUrl("/api/auth/login")
+	            .usernameParameter("username")
+	            .passwordParameter("password")
+	            .successHandler((req, res, auth) -> res.setStatus(HttpServletResponse.SC_OK))
+	            .failureHandler((req, res, ex) -> res.setStatus(HttpServletResponse.SC_UNAUTHORIZED))
+	        )
+	        .logout(logout -> logout
+	            .logoutUrl("/api/auth/logout")
+	            .logoutSuccessHandler((req, res, auth) -> res.setStatus(HttpServletResponse.SC_OK))
+	        );
 
-    return http.build();
+	    return http.build();
 	}
-	
-	@Bean
-	public PasswordEncoder passwordEncoder() {
-		return new BCryptPasswordEncoder();
-	}	
-	
-	//프론트엔드 리액트에서 요청하는 주소 허용
-	@Bean
+
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
+    
+ // 프론트엔드(React) 주소 허용
+    @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowedOrigins(List.of("http://localhost:3000")); // React 개발 서버
@@ -73,6 +62,6 @@ public class Securityconfig {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", config);
         return source;
-    }	
+    }
 	
 }
