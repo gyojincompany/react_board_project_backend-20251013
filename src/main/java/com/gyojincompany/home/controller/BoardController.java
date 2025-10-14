@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -70,6 +71,25 @@ public class BoardController {
 		}
 		
 	}
+	
+	//특정 id 글 삭제
+	@DeleteMapping("/{id}")
+	public ResponseEntity<?> deletePost(@PathVariable("id") Long id, Authentication auth) {
+
+		Optional<Board> _board = boardRepository.findById(id);
+		
+		if (auth == null || !auth.getName().equals(_board.get().getAuthor().getUsername())) {
+			return ResponseEntity.status(403).body("해당 글에 대한 삭제 권한이 없습니다.");
+		}
+		
+		if (_board.isPresent()) { //참이면 삭제할 글 가져오기 성공
+			boardRepository.delete(_board.get());
+			return ResponseEntity.ok("글 삭제 성공");
+		} else { //거짓이면 해당 글 조회 실패
+			return ResponseEntity.status(404).body("해당 게시글은 존재하지 않아 삭제 실패하였습니다.");
+		}
+		
+	} 
 	
 
 }
