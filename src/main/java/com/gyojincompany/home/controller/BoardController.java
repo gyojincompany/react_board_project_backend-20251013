@@ -1,12 +1,14 @@
 package com.gyojincompany.home.controller;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -16,6 +18,8 @@ import com.gyojincompany.home.entity.Board;
 import com.gyojincompany.home.entity.SiteUser;
 import com.gyojincompany.home.repository.BoardRepository;
 import com.gyojincompany.home.repository.UserRepository;
+
+import jakarta.persistence.EntityNotFoundException;
 
 @RestController
 @RequestMapping("/api/board")
@@ -51,6 +55,20 @@ public class BoardController {
 		boardRepository.save(board);
 		
 		return ResponseEntity.ok(board);
+	}
+	
+	//특정 게시글 번호(id)로 조회(글 상세보기)
+	@GetMapping("/{id}")
+	public ResponseEntity<?> getPost(@PathVariable("id") Long id) {
+//		Board board = boardRepository.findById(id)
+//				.orElseThrow(()->new EntityNotFoundException("해당 글 없음"));
+		Optional<Board> _board = boardRepository.findById(id);
+		if(_board.isPresent()) { //참이면 글 조회 성공
+			return ResponseEntity.ok(_board.get()); //해당 id글을 반환
+		} else { //거짓이면 해당 글 조회 실패
+			return ResponseEntity.status(404).body("해당 게시글은 존재하지 않습니다.");
+		}
+		
 	}
 	
 
