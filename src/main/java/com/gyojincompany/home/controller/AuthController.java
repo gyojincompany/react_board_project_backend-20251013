@@ -25,7 +25,7 @@ public class AuthController {
 	@Autowired
 	private PasswordEncoder passwordEncoder;
 	
-	@PostMapping("/signup")
+	@PostMapping("/signup") //sql->insert->post
 	public ResponseEntity<?> signup(@RequestBody SiteUser req) {
 		//사용자 이름(username)이 DB에 이미 존재하는지 확인
 		if(userRepository.findByUsername(req.getUsername()).isPresent()) {
