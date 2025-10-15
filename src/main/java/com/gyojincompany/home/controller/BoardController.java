@@ -6,6 +6,10 @@ import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -18,6 +22,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.gyojincompany.home.dto.BoardDto;
@@ -39,11 +44,46 @@ public class BoardController {
 	@Autowired
 	private UserRepository userRepository;
 	
-	//전체 게시글 조회
+//	//전체 게시글 조회->페이징 처리 x
+//	@GetMapping
+//	public List<Board> list() {
+//		return boardRepository.findAll();
+//	}
+	
+	//게시글 페이징 처리
 	@GetMapping
-	public List<Board> list() {
-		return boardRepository.findAll();
+	public ResponseEntity<?> pagingList(@RequestParam(name = "page", defaultValue = "0") int page,
+						@RequestParam(name ="size", defaultValue = "10") int size) {
+		//page->사용자가 요청한 페이지의 번호, size->한 페이지당 보여질 글의 갯수
+		
+		if (page < 0) {
+			page = 0;
+		}
+		
+		if (size <= 0) {
+			size = 10;
+		}
+		
+		//Pageable 객체 생성->findAll에서 사용
+		Pageable pageable = PageRequest.of(page, size, Sort.by("id").descending());
+		Page<Board> boardPage = boardRepository.findAll(pageable); //DB에서 페이징된 게시글만 조회
+		//boardPage가 포함하는 정보->
+		//1. 해당 페이지 글 리스트->boardPage.getContent()
+		//2. 현재 페이지 번호->boardPage.getNumber()
+		//3. 전체 페이지 수->boardPage.getTotalPages()
+		//4. 전체 게시글 수-> boardPage.getTotalElements()
+		
+		Map<String, Object> pagingResponse = new HashMap<>();
+		pagingResponse.put("posts", boardPage.getContent()); //페이징된 현재 페이지에 해당하는 게시글 리스트 10개
+		pagingResponse.put("currentPage", boardPage.getNumber()); //현재 페이지 번호
+		pagingResponse.put("totalPages", boardPage.getTotalPages()); //모든 페이지의 수
+		pagingResponse.put("totalItems", boardPage.getTotalElements()); //게시판에 올라와 있는 모든 글 수(Long)
+		//{"currentPage":3, totalPages:57}
+		
+		return ResponseEntity.ok(pagingResponse);
 	}
+	
+	
 	
 //	//게시글 작성
 //	@PostMapping
