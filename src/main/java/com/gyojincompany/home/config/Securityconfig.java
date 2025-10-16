@@ -27,7 +27,8 @@ public class Securityconfig {
 	        .csrf(csrf -> csrf.disable())  // ✅ 새 방식 (람다 DSL)
 	        .cors(Customizer.withDefaults())
 	        .authorizeHttpRequests(auth -> auth
-	            .requestMatchers("/api/auth/signup", "/api/auth/login", "/api/board", "/api/board/**").permitAll()
+	            .requestMatchers("/api/auth/signup", "/api/auth/login", "/api/board", 
+	            		"/api/board/**", "/api/comments", "/api/comments/**").permitAll()
 	            .anyRequest().authenticated()
 	        )
 	        .formLogin(login -> login
