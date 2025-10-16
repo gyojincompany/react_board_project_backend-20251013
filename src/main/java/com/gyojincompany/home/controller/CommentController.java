@@ -13,6 +13,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -96,6 +97,26 @@ public class CommentController {
 		List<Comment> comments  = commentRepository.findByBoard(_board.get());
 		
 		return ResponseEntity.ok(comments);
+	}
+	
+	//댓글 수정
+	@PutMapping("/{commentId}")
+	public ResponseEntity<?> updateComment(
+			@PathVariable("commentId") Long commentId,
+			@RequestBody CommentDto commentDto,
+			Authentication auth) {
+		
+		//수정할 댓글 찾아오기
+		Comment comment = commentRepository.findById(commentId).orElseThrow();
+		
+		if (!comment.getAuthor().getUsername().equals(auth.getName())) { //참이면 수정 권한 X
+			return ResponseEntity.status(403).body("수정 권한이 없습니다.");
+		}
+		
+		comment.setContent(commentDto.getContent());
+		commentRepository.save(comment); //수정 완료
+		
+		return ResponseEntity.ok(comment); //수정 완료 후 수정된 댓글 객체 반환
 	}
 	
 
