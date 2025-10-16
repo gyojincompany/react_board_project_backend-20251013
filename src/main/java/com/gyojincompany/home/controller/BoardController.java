@@ -79,6 +79,7 @@ public class BoardController {
 		pagingResponse.put("totalPages", boardPage.getTotalPages()); //모든 페이지의 수
 		pagingResponse.put("totalItems", boardPage.getTotalElements()); //게시판에 올라와 있는 모든 글 수(Long)
 		//{"currentPage":3, totalPages:57}
+		//System.out.println("총 글의 갯수:" + boardPage.getTotalElements());
 		
 		return ResponseEntity.ok(pagingResponse);
 	}
