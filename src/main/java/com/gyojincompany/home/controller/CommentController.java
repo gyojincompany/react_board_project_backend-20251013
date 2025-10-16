@@ -1,11 +1,15 @@
 package com.gyojincompany.home.controller;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -41,12 +45,29 @@ public class CommentController {
 	public ResponseEntity<?> writeComment(
 			@PathVariable("boardId") Long boardId,
 			@Valid @RequestBody CommentDto commentDto,
+			BindingResult bindingResult, 
 			Authentication auth
 			) {
+		
+		//Spring Validation 결과 처리
+		if(bindingResult.hasErrors()) { //참이면 유효성 체크 실패->error 발생
+			Map<String, String> errors = new HashMap<>();
+			bindingResult.getFieldErrors().forEach(
+				err -> {
+					errors.put(err.getField(), err.getDefaultMessage());					
+				}
+			);
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errors);
+		}
+		
 		//원 게시글의 존재 여부 확인
 		Optional<Board> _board = boardRepository.findById(boardId);
 		if (_board.isEmpty()) { //참이면 해당 원 게시글 존재 x
-			return ResponseEntity.badRequest().body("해당 게시글이 존재하지 않습니다.");
+			
+			Map<String, String> error = new HashMap<>();
+			error.put("boardError", "해당 게시글이 존재하지 않습니다.");
+			
+			return ResponseEntity.status(404).body(error);
 		}
 		
 		//로그인한 유저의 SiteUser 객체 가져오기
