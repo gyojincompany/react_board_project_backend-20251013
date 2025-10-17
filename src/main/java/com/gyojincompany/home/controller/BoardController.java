@@ -14,6 +14,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -29,6 +30,7 @@ import com.gyojincompany.home.dto.BoardDto;
 import com.gyojincompany.home.entity.Board;
 import com.gyojincompany.home.entity.SiteUser;
 import com.gyojincompany.home.repository.BoardRepository;
+import com.gyojincompany.home.repository.CommentRepository;
 import com.gyojincompany.home.repository.UserRepository;
 
 import jakarta.persistence.EntityNotFoundException;
@@ -42,7 +44,10 @@ public class BoardController {
 	private BoardRepository boardRepository;
 	
 	@Autowired
-	private UserRepository userRepository;
+	private UserRepository userRepository;    
+	
+	@Autowired
+	private CommentRepository commentRepository;
 	
 //	//전체 게시글 조회->페이징 처리 x
 //	@GetMapping
@@ -144,7 +149,7 @@ public class BoardController {
 	}
 	
 	//특정 게시글 번호(id)로 조회(글 상세보기)
-	@GetMapping("/{id}")
+	@GetMapping("/{id}")	
 	public ResponseEntity<?> getPost(@PathVariable("id") Long id) {
 //		Board board = boardRepository.findById(id)
 //				.orElseThrow(()->new EntityNotFoundException("해당 글 없음"));
@@ -171,8 +176,7 @@ public class BoardController {
 		//로그인한 유저의 삭제 권한 확인
 		if (auth == null || !auth.getName().equals(_board.get().getAuthor().getUsername())) {
 			return ResponseEntity.status(403).body("해당 글에 대한 삭제 권한이 없습니다.");
-		}
-		
+		}		
 		
 		boardRepository.delete(_board.get());
 		return ResponseEntity.ok("글 삭제 성공"); //200

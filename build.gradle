@@ -2,6 +2,7 @@ plugins {
 	id 'java'
 	id 'org.springframework.boot' version '3.5.6'
 	id 'io.spring.dependency-management' version '1.1.7'
+	id 'com.github.node-gradle.node' version '7.1.0' //React 빌드용 플러그인 추가
 }
 
 group = 'com.gyojincompany'
@@ -41,3 +42,40 @@ dependencies {
 tasks.named('test') {
 	useJUnitPlatform()
 }
+
+/* =============== React 프론트 엔드 빌드 설정 ================= */
+
+/* Node.js 빌드 설정 */
+node {
+	version = '22.19.0'
+	download = false
+	workDir = file("${project.buildDir}/nodejs")
+    npmWorkDir = file("${project.buildDir}/npm")
+}
+
+def frontendDir = "$projectDir/src/main/frontend"
+
+tasks.register("npmCustomInstall", com.github.gradle.node.npm.task.NpmTask) {
+	workingDir = file(frontendDir)
+	args = ["install"]
+}
+
+tasks.register("npmBuild", com.github.gradle.node.npm.task.NpmTask) {
+   dependsOn("npmCustomInstall")
+   workingDir = file(frontendDir)
+   args = ["run", "build"]
+}
+
+tasks.register("copyFrontend", Copy) {
+   dependsOn("npmBuild")
+   from("$frontendDir/build")
+   into("$projectDir/src/main/resources/static")
+}
+
+tasks.named("processResources") {
+	dependsOn("copyFrontend")
+}
+
+
+
+

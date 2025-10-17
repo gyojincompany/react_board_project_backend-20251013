@@ -1,0 +1,31 @@
+/* 네비게이션 바 */
+
+.navbar {
+    background-color: #1e88e5;
+    color: white;
+    padding: 12px 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.navbar .logo {
+    font-size: 20px;
+    font-weight: bold;
+}
+
+.navbar .menu a,
+.navbar .menu button {
+    text-decoration: none;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 14px;
+    color: white;
+    margin-left: 16px;
+}
+
+.navbar .menu a:hover,
+.navbar .menu button:hover {
+    text-decoration: underline;
+}

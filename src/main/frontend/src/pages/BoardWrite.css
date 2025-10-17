@@ -1,0 +1,62 @@
+.write-container {
+    max-width: 800px;
+    margin: 20px auto;
+    padding: 20px;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.write-container h2 {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.write-form {
+    display: flex;
+    flex-direction: column;
+}
+
+.write-form input {
+    padding: 10px;
+    border: 1px solid #dddddd;
+    border-radius: 5px;
+    font-size: 16px;
+    margin-bottom: 15px;
+}
+
+.write-form textarea {
+    padding: 10px;
+    border: 1px solid #dddddd;
+    border-radius: 5px;
+    font-size: 16px;
+    margin-bottom: 15px;
+    resize: vertical;
+    min-height: 150px;
+}
+
+.button-group {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+}
+
+.button-group button {
+    background-color: #1e88e5;
+    color: white;
+    padding: 10px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;  
+}
+
+.button-group button[type="submit"]:hover {
+    background: #0263b8;
+    color: white;
+}
+
+.button-group button[type="button"]:hover {
+    background: #ee555d;
+    color: white;
+}
+

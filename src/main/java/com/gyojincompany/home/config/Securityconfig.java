@@ -24,14 +24,40 @@ public class Securityconfig {
 	@Bean
 	public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 	    http
-	        .csrf(csrf -> csrf.disable())  // ✅ 새 방식 (람다 DSL)
+	        .csrf(csrf -> csrf.disable())  //새 방식 (람다 DSL)
 	        .cors(Customizer.withDefaults())
 	        .authorizeHttpRequests(auth -> auth
-	            .requestMatchers("/api/auth/signup", "/api/auth/login", "/api/board", 
-	            		"/api/board/**", "/api/comments", "/api/comments/**").permitAll()
+	        		//리액트 라우터 설정 경로 허용
+	        		.requestMatchers(
+	        				"/", 
+	        				"/index.html", 
+	        				"/login", 
+	        				"/signup", 
+	        				"/board/**", 
+	        				"/static/**")
+	        		.permitAll()	                
+	                // 읽기 API는 로그인 없이 허용
+	                .requestMatchers(
+	                		"/api/board", 
+	                		"/api/board/**", 
+	                		"/api/comments", 
+	                		"/api/comments/**")
+	                .permitAll()
+	                
+	                // 쓰기/수정/삭제 API는 인증 필요
+//	                .requestMatchers(
+//	                		"/api/board/write", 
+//	                		"/api/board/update/**", 
+//	                		"/api/board/delete/**")
+//	                .authenticated()
+//	                .requestMatchers(
+//	                		"/api/comments/write", 
+//	                		"/api/comments/delete/**")
+//	                .authenticated()           
 	            .anyRequest().authenticated()
-	        )
-	        .formLogin(login -> login
+	        )	      
+	        .formLogin(login -> login	 
+	        	.loginPage("/login").permitAll()	
 	            .loginProcessingUrl("/api/auth/login")
 	            .usernameParameter("username")
 	            .passwordParameter("password")
@@ -41,7 +67,8 @@ public class Securityconfig {
 	        .logout(logout -> logout
 	            .logoutUrl("/api/auth/logout")
 	            .logoutSuccessHandler((req, res, auth) -> res.setStatus(HttpServletResponse.SC_OK))
-	        );
+	        ); 
+		
 
 	    return http.build();
 	}
@@ -55,7 +82,11 @@ public class Securityconfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOrigins(List.of("http://localhost:3000")); // React 개발 서버
+        config.setAllowedOrigins(List.of(
+        		"http://localhost:3000",
+        		"http://http://172.30.1.55:3000",
+        		"http:127.0.0.1:3000"
+        		)); // React 개발 서버
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("*"));
         config.setAllowCredentials(true); // 쿠키, 세션 허용 시 필요
@@ -64,5 +95,7 @@ public class Securityconfig {
         source.registerCorsConfiguration("/**", config);
         return source;
     }
+    
+    
 	
 }

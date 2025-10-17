@@ -1,0 +1,92 @@
+/* 게시판 스타일 디자인 */
+
+.container {
+    max-width: 800px;
+    padding: 0 10px;
+    margin: 20px auto;
+}
+
+h2 {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.board-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+}
+
+.board-table th {
+    border: 1px solid #dddddd;
+    padding: 10px;
+    text-align: center;
+    background-color: #f4f4f4 ;
+}
+
+.board-table td {
+    border: 1px solid #dddddd;
+    padding: 10px;
+    text-align: center;
+}
+
+.write-button-container {
+    text-align: right; /* 버튼 오른쪽 정렬 */
+}
+
+.write-button {
+    background-color: #1e88e5;
+    color: white;
+    padding: 10px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;    
+    margin-bottom: 20px;
+}
+
+.write-button:hover {
+    background: #0263b8;
+    color: white;   
+}
+
+.click-title {
+    cursor: pointer;
+    color: #1242df;
+    font-weight: bold;
+}
+
+.click-title:hover {
+    text-decoration: underline;
+}   
+
+.pagination {
+    margin-top: 20px;
+    display: flex;
+    justify-content: center;
+    gap: 5px;
+}
+
+.pagination button {
+    padding: 5px 10px;
+    border: 1px solid #dddddd;
+    border-radius: 3px;
+    cursor: pointer;
+    background-color: white;
+}
+
+.pagination button.active {
+    padding: 5px 10px;
+    border: 1px solid #dddddd;
+    border-radius: 3px;
+    cursor: pointer;
+    background-color: rgb(57, 99, 214);
+    color: white;
+    font-weight: bold;
+}
+
+/* 버튼 중에 속성이 disabled 인 버튼에만 적용 */
+.pagination button:disabled {
+    cursor: not-allowed; /* 금지 화살표 포인터 모양으로 변경 */
+    opacity: 0.5; /* 투명도 50% 추가 */
+}
+
