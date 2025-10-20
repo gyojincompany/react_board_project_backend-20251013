@@ -67,7 +67,10 @@ public class Securityconfig {
 	        .logout(logout -> logout
 	            .logoutUrl("/api/auth/logout")
 	            .logoutSuccessHandler((req, res, auth) -> res.setStatus(HttpServletResponse.SC_OK))
-	        ); 
+	        )
+//	        .anonymous().disable()
+	        .anonymous(anonymous -> anonymous.disable()); //로그아웃 후 user를 null값으로 변경
+	        ; 
 		
 
 	    return http.build();
@@ -84,7 +87,9 @@ public class Securityconfig {
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowedOrigins(List.of(
         		"http://localhost:3000",
-        		"http://http://172.30.1.55:3000",
+        		"http://localhost:8888",
+        		"http://172.30.1.55:3000", //본인 서버 주소 ip(개발)->배포 서버 ip
+        		"http://172.30.1.55:8888", //본인 서버 주소 ip(개발)->배포 서버 ip
         		"http:127.0.0.1:3000"
         		)); // React 개발 서버
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
